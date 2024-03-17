@@ -1,19 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver import FirefoxOptions
-
-serveries = [
-            "south-servery",
-             "seibel-servery", 
-             "west-servery", 
-             "north-servery", 
-             "baker-college-kitchen"
-             ]
 
 def get_html(servery):
     URL = "https://dining.rice.edu/"+servery
@@ -48,14 +35,22 @@ def combine(meals):
             dic[title] = dic[title]+get_dishes(meal)
     return dic
 
-all_dishes = {}
-for servery in serveries:
-    html = get_html(servery)
-    soup = BeautifulSoup(html, "html.parser")
-    meals = soup.find_all("div", class_="views-element-container",attrs={'style':'display: block;'})
-    all_dishes[servery] = combine(meals)
-    print(servery, "done")
+def get_all_dishes():
+    serveries = [
+                "south-servery",
+                "seibel-servery", 
+                "west-servery", 
+                "north-servery", 
+                "baker-college-kitchen"
+                ]
 
-for key, value in all_dishes.items():
-    print(key, value)
+    all_dishes = {}
+    for servery in serveries:
+        html = get_html(servery)
+        soup = BeautifulSoup(html, "html.parser")
+        meals = soup.find_all("div", class_="views-element-container",attrs={'style':'display: block;'})
+        all_dishes[servery] = combine(meals)
+        print(servery, "done")
+
+    return all_dishes
 
