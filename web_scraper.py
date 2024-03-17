@@ -7,15 +7,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import FirefoxOptions
 
-serveries = ["south-servery","seibel-servery", "west-servery", "north-servery", "baker-college-kitchen"]
+serveries = [
+            "south-servery",
+             "seibel-servery", 
+             "west-servery", 
+             "north-servery", 
+             "baker-college-kitchen"
+             ]
 
 def get_html(servery):
     URL = "https://dining.rice.edu/"+servery
 
-    opts = FirefoxOptions()
-    opts.add_argument("--headless")
-    driver = webdriver.Firefox(options=opts)
+    chromedriver_path = './chromedriver'
+    driver = webdriver.Chrome(executable_path=chromedriver_path)
     driver.get(URL)
+    driver.refresh()
     html_content = driver.page_source
     driver.quit()
 
@@ -24,7 +30,10 @@ def get_html(servery):
 def lunch_or_dinner(meal):
     soup = BeautifulSoup(str(meal), "html.parser")
     meal_title = soup.find("h2")
-    return meal_title.text
+    if meal_title is not None:
+        return meal_title.text
+    else:
+        return ""
 
 def get_dishes(meal):
     soup = BeautifulSoup(str(meal), "html.parser")
@@ -45,6 +54,7 @@ for servery in serveries:
     soup = BeautifulSoup(html, "html.parser")
     meals = soup.find_all("div", class_="views-element-container",attrs={'style':'display: block;'})
     all_dishes[servery] = combine(meals)
+    print(servery, "done")
 
 for key, value in all_dishes.items():
     print(key, value)
